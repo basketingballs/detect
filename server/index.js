@@ -48,7 +48,6 @@ app.get("/", async (req, res) => {
 app.get("/account", async (req, res) => {
   try {
     accounts = await pool.query("select account_id from account;");
-    console.log(accounts.rowCount);
     if (accounts.rowCount == 0) {
       res.send(true);
     } else {
@@ -58,6 +57,16 @@ app.get("/account", async (req, res) => {
     res.send(err);
   }
 });
+
+app.get("/email", async (req, res) => {
+  try {
+    email = await pool.query("delete from temp_email_confirmation *;");
+      res.send(true);
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`serving`);

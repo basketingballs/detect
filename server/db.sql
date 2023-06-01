@@ -295,11 +295,11 @@ INSERT INTO test_result (test_result_id,value) VALUES (0,'negative'),(1,'positiv
 
 CREATE TABLE subject_tests (
     test_id SERIAL PRIMARY KEY,
-    subject_id INT REFERENCES subject(subject_id) NOT NULL ON DELETE CASCADE,
-    doctor_id INT REFERENCES doctor(doctor_id) NOT NULL ON DELETE CASCADE,
-    unit_id INT REFERENCES unit(unit_id) NOT NULL ON DELETE CASCADE,
-    lab_id INT REFERENCES laboratory(lab_id) NOT NULL ON DELETE CASCADE,
-    camp_id INT REFERENCES campaign(campaign_id) NOT NULL ON DELETE CASCADE,
+    subject_id INT REFERENCES subject(subject_id) ON DELETE CASCADE NOT NULL,
+    doctor_id INT REFERENCES doctor(doctor_id) ON DELETE CASCADE NOT NULL,
+    unit_id INT REFERENCES unit(unit_id)ON DELETE CASCADE  NOT NULL ,
+    lab_id INT REFERENCES laboratory(lab_id)  ON DELETE CASCADE NOT NULL,
+    camp_id INT REFERENCES campaign(campaign_id) ON DELETE CASCADE NOT NULL,
     test_result INT CHECK (test_result in (0,1,2,3,4)) REFERENCES test_result(test_result_id),
     doctor_notes TEXT,
     test_date DATE NOT NULL DEFAULT CURRENT_DATE
@@ -307,15 +307,15 @@ CREATE TABLE subject_tests (
 
 CREATE TABLE test_data (
     test_data_id SERIAL PRIMARY KEY,
-    test_id INT REFERENCES subject_tests(test_id) NOT NULL ON DELETE CASCADE,
+    test_id INT REFERENCES subject_tests(test_id) ON DELETE CASCADE  NOT NULL,
     is_smoker BOOLEAN,
     eat_before_test BOOLEAN
 );
 
 CREATE TABLE camp_unit (
     camp_unit_id SERIAL PRIMARY KEY,
-    unit_id INT REFERENCES unit(unit_id) NOT NULL ON DELETE CASCADE,
-    camp_id INT REFERENCES campaign(campaign_id) NOT NULL ON DELETE CASCADE,
+    unit_id INT REFERENCES unit(unit_id) ON DELETE CASCADE  NOT NULL,
+    camp_id INT REFERENCES campaign(campaign_id) ON DELETE CASCADE  NOT NULL,
     status INT REFERENCES status(status_id) DEFAULT 3 NOT NULL,
     start_date DATE DEFAULT CURRENT_DATE,
     end_date DATE
@@ -325,7 +325,7 @@ CREATE TABLE camp_unit (
 CREATE TABLE unit_lab (
     unit_lab_id SERIAL PRIMARY KEY,
     camp_unit_id INT REFERENCES camp_unit(camp_unit_id) NOT NULL,
-    lab_id INT REFERENCES laboratory(lab_id) NOT NULL ON DELETE CASCADE,
+    lab_id INT REFERENCES laboratory(lab_id) ON DELETE CASCADE  NOT NULL,
     status INT REFERENCES status(status_id) DEFAULT 3 NOT NULL,
     start_date DATE,
     end_date DATE
@@ -334,7 +334,7 @@ CREATE TABLE unit_lab (
 CREATE TABLE unit_doc (
     unit_doc_id SERIAL PRIMARY KEY,
     camp_unit_id INT REFERENCES camp_unit(camp_unit_id) NOT NULL,
-    doctor_id INT REFERENCES doctor(doctor_id) NOT NULL ON DELETE CASCADE,
+    doctor_id INT REFERENCES doctor(doctor_id) ON DELETE CASCADE  NOT NULL,
     status INT REFERENCES status(status_id) DEFAULT 3 NOT NULL,
     start_date DATE DEFAULT CURRENT_DATE,
     end_date DATE

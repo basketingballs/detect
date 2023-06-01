@@ -54,7 +54,6 @@ router.post('/create', async (req, res) => {
         });
 
         const data = JSON.parse(atob(token.split('.')[1]));
-        console.log(data)
 
         if (data.level != 1 || data.type != 'sysadmin') {
             return res.status(400).json({ message: 'sys_admin not allowed!' });

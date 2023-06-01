@@ -55,7 +55,6 @@ export default function AddUnits({ unitList, setOpen }) {
 
   const addUnit = async (id) => {
     try {
-      console.log(id);
       const buffer = await JSON.parse(sessionStorage.getItem("campaign"));
       const response = await PersonService.AddUnitCampaign({
         unit_id: id,

@@ -23,7 +23,6 @@ export default function Login() {
                 setIsOpen(true);
             }
         } catch (err) {
-            console.log(err.message)
             toast.error(err.message);
         }
     };
@@ -45,6 +44,17 @@ export default function Login() {
 
     function openModal() {
         setIsOpen(true);
+        
+    }
+
+    const deleteEmailRef = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/email', { method: 'GET' });
+            const jsonData = await response.json();
+            }
+        catch (err) {
+            toast.error(err.message);
+        }
     }
 
     return (

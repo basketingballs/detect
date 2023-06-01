@@ -74,7 +74,6 @@ router.get('/all', async (req, res) => {
 
 // create doctor
 router.post('/create', async (req, res) => {
-    console.log('here');
     const { name,wilaya ,dayra,baladya, neighbourhood , postal_code,email,phone } = req.body;
     try {
         token = req.headers['authorization'];
@@ -108,7 +107,6 @@ router.post('/create', async (req, res) => {
         }
 
         const SysAdmin = await pool.query('SELECT * FROM sys_admin WHERE account_id=$1', [data.id]);
-        console.log(SysAdmin.rows[0])
         if (SysAdmin.rowCount == 0) {
             return res.status(400).json({ message: `system admin ${data.id} does not exist!` });
         }

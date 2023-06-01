@@ -107,8 +107,6 @@ const CreateAdminForm = ({ open, setOpen }) => {
       try {
         const response = await PersonService.createSysAdmin(data);
 
-        console.log(response.message);
-
         toast.success("Successfully created!");
 
         setName("");

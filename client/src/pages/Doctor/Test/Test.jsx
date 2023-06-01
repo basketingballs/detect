@@ -184,7 +184,6 @@ export default function Test() {
 
             data : info,
             }
-            console.log(data)
             try{
                const response = await PersonService.createSubject(data)
                toast.success(response.data.message)

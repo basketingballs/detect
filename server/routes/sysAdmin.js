@@ -43,7 +43,6 @@ router.post('/confirm', async (req, res) => {
         res.status(200).json({ message: 'a confirmation code was sent to your email ...' });
     } catch (err) {
         res.status(500).json({ message: err.message });
-        console.log(err.message);
     }
 });
 
@@ -116,8 +115,6 @@ router.post('/signup', async (req, res) => {
             [newSysAdmin.rows[0].admin_id]
         );
 
-        console.log('here2');
-
         res.status(200).json({ message: 'created successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -141,8 +138,6 @@ router.post('/create', async (req, res) => {
         });
 
         const data = JSON.parse(atob(token.split('.')[1]));
-
-        console.log(data);
 
         if (data.level != 1 || data.type != 'sysadmin') {
             return res.status(400).json({ message: 'sys_admin not allowed!' });
@@ -256,7 +251,6 @@ router.post('/delete/:id', async (req, res) => {
 router.get('/campaign', async (req, res) => {
     try {
         token = req.headers['authorization'];
-        console.log('err');
         if (!token) {
             return res.status(401).json({ message: 'UnAuthorized' });
         }
@@ -495,7 +489,6 @@ router.post('/unit/doc/add', async (req, res) => {
         );
         return res.json({ message: 'doctor added to unit successfully' });
     } catch (err) {
-        console.log(err.message)
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -512,7 +505,6 @@ router.post('/unit/doc/remove', async (req, res) => {
             }
         });
         const { doctor_id } = req.body;
-        console.log(doctor_id)
         const response = pool.query('UPDATE unit_doc set status = 4 WHERE  status = 1 AND doctor_id =$1', [doctor_id]);
 
         return res.json({ message: 'doctor removed successfully' });

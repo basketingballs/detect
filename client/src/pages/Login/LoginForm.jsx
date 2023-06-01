@@ -60,7 +60,6 @@ function LoginForm({ nav }) {
         setEmail("");
         setPw("");
         const UserData = JSON.parse(atob(response.data.token.split(".")[1]));
-        console.log(`on machine ${UserData.machine}`);
         localStorage.setItem("token", JSON.stringify(response.data.token));
         localStorage.setItem("user data", JSON.stringify(UserData));
         navigate(`/${UserData.type}`);
