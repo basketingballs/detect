@@ -104,12 +104,13 @@ router.post('/signup', async (req, res) => {
             `INSERT INTO account (pw_hash,email,phone,account_type) VALUES($1, $2, $3, 'sysadmin') RETURNING account_id;`,
             [pwhash, email, phone]
         );
-
+        //!
         const newSysAdmin = await pool.query(
             `INSERT INTO sys_admin (person_id,account_id,level) VALUES($1, $2, 1) RETURNING admin_id;`,
             [id, newAccount.rows[0].account_id]
         );
         console.log(newAccount.rows[0].account_id);
+        //!
         const initCampaign = await pool.query(
             `INSERT INTO campaign (name,description,status,created_date,created_by) VALUES ('Colorectal cancer','this a protoype campaign intialized on first admin signup',1,CURRENT_DATE,$1);`,
             [newSysAdmin.rows[0].admin_id]

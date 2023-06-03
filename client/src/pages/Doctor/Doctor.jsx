@@ -26,7 +26,7 @@ export default function Doctor(){
     const options = {
       method: "GET",
       headers: {
-        authorization: `${JSON.parse(localStorage.getItem("token"))}`,
+        authorization: `${JSON.parse(localStorage.getItem('token'))}`,
       },
     };
     try {

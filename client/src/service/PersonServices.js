@@ -2,7 +2,7 @@ import axios from "axios";
 
 const PersonService = {};
 
-// create a sys admin if theere are no sysadmin accounts
+// create a sys admin if there are no sysadmin accounts
 PersonService.signup = function (data) {
   return axios.post("http://localhost:5000/sysadmin/signup", data);
 };

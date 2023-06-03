@@ -1,21 +1,14 @@
-#FRONTEND
+# FRONTEND
 --HomePage
-home /events/contact us + articles
-footer : about us + social media
+
 --login
 forget password
 --SysAdminPage
+auto refresh after creating doctor
+--DoctorPage
 
---UnitDoctorPage
-DataForm(cancel (x)btn +submit) +PatientTable -->link it to DB
-Inbox
-Help
-Dynamic Charts
+# BACKEND
 
-#BACKEND
---routes
-Signup Doctor -->send the generated pw to doctor
-Subject routs
---DB
-subject table
-data form table
+# ERROR DETECTED
+logout buttons
+add new test>doctor

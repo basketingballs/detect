@@ -7,10 +7,6 @@ const service = require('../controllers/account.controllers');
 
 router.use(express.json());
 
-
-
-
-
 // create doctor
 router.post('/create', async (req, res) => {
     const { id, name, lastname, email, gender, phone, date, speciality } = req.body;
@@ -82,7 +78,7 @@ router.post('/create', async (req, res) => {
             subject: 'hello',
             text: `your password is ${pw}`,
         };
-
+        //! console.log
         service.transporter.sendMail(mail, (err, info) => {
             if (err) {
                 console.log(err);

@@ -7,7 +7,7 @@ const service = require('../controllers/account.controllers');
 
 router.use(express.json());
 
-// create doctor
+// create subject
 router.post('/create', async (req, res) => {
     const {
         id,

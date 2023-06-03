@@ -1,8 +1,10 @@
 --- important : work with this database 
 
+-- execute this first
 CREATE DATABASE detect;
+-- then this
 \c detect;
-
+-- then finally all this
 CREATE TABLE account (
   account_id SERIAL PRIMARY KEY,
   email TEXT NOT NULL,
@@ -445,10 +447,10 @@ BEFORE UPDATE ON unit_doc
 FOR EACH ROW
 EXECUTE FUNCTION set_end_date();
 
-    subject_id ,
-    doctor_id ,
-    unit_id,
-    lab_id ,
-    camp_id ,
-    doctor_notes,
-    test_date
+    -- subject_id ,
+    -- doctor_id ,
+    -- unit_id,
+    -- lab_id ,
+    -- camp_id ,
+    -- doctor_notes,
+    -- test_date

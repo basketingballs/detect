@@ -7,40 +7,40 @@ function Loading() {
                 </nav>
                 <div className="flex h-screen">
                     <div className="h-screen px-32 bg-gray-200 rounded-md dark:bg-gray-300 max-w-[360px]">
-                        <div class="flex items-center justify-between">
+                        <div className="flex items-center justify-between">
                             <div>
-                                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                <div className="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                             </div>
-                            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
                         </div>
-                        <div class="flex items-center justify-between pt-4">
+                        <div className="flex items-center justify-between pt-4">
                             <div>
-                                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                <div className="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                             </div>
-                            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
                         </div>
-                        <div class="flex items-center justify-between pt-4">
+                        <div className="flex items-center justify-between pt-4">
                             <div>
-                                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                <div className="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                             </div>
-                            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
                         </div>
-                        <div class="flex items-center justify-between pt-4">
+                        <div className="flex items-center justify-between pt-4">
                             <div>
-                                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                <div className="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                             </div>
-                            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
                         </div>
-                        <div class="flex items-center justify-between pt-4">
+                        <div className="flex items-center justify-between pt-4">
                             <div>
-                                <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-                                <div class="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                                <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+                                <div className="w-32 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
                             </div>
-                            <div class="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
+                            <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-12"></div>
                         </div>
                     </div>
                     <main className="flex-1 p-2 overflow-y-auto">
