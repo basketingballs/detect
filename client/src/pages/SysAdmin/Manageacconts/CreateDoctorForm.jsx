@@ -1,5 +1,4 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Menu, Dialog, Transition } from '@headlessui/react';
 import toast from 'react-hot-toast';
 
@@ -12,13 +11,37 @@ const CreateDoctorForm = ({ open, setOpen }) => {
     const [name, setName] = useState('');
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+    const [phone, setPhone] = useState('+213');
     const [gender, setGender] = useState(null);
     const [spec, setSpec] = useState(0);
     const [specText, setSpecText] = useState('speciality');
     const [addSpec, setAddSpec] = useState(false);
     const [allSpecs, setAllSpecs] = useState([]);
     const [bdate, setBDate] = useState(null);
+
+    const reset = () => {
+        setID('');
+        setName('');
+        setLastname('');
+        setEmail('');
+        setPhone('+213');
+        setGender(null);
+        setSpecText('speciality');
+        setSpec(0);
+        setAddSpec(false);
+        setAllSpecs([]);
+        setBDate(null);
+        setErrors({
+            id: '',
+            name: '',
+            lastname: '',
+            email: '',
+            phone: '',
+            spec: '',
+            gender: '',
+            bdate: '',
+        });
+    };
 
     const [errors, setErrors] = useState({
         id: '',
@@ -71,7 +94,7 @@ const CreateDoctorForm = ({ open, setOpen }) => {
             status = false;
         }
         if (bdate == null) {
-            localErrors.date = 'a birthdate is required';
+            localErrors.bdate = 'a birthdate is required';
             status = false;
         }
 
@@ -118,7 +141,7 @@ const CreateDoctorForm = ({ open, setOpen }) => {
             try {
                 const response = await PersonService.createDoctor(data);
                 toast.success('Successfully created!');
-
+                reset();
                 return false;
             } catch (err) {
                 toast.error(err.response.data.message);
@@ -161,22 +184,22 @@ const CreateDoctorForm = ({ open, setOpen }) => {
             if (specText == '') {
                 toast.error('speciality name cannot be empty');
                 return;
-            }else if(specText == 'speciality'){
-              toast.error('at least change it');
-              return;
+            } else if (specText == 'speciality') {
+                toast.error('at least change it');
+                return;
             }
             const data = {
                 name: specText,
             };
             const response = await PersonService.addSpeciality(data);
-            toast.success(response.data)
+            toast.success(response.data);
         } catch (err) {
             toast.error(err.response.data);
         }
     };
     useEffect(() => {
         getSpecs();
-    }, [open,addSpec]);
+    }, [open, addSpec]);
 
     return (
         <Transition show={open} as={Fragment}>
@@ -210,7 +233,7 @@ const CreateDoctorForm = ({ open, setOpen }) => {
                             leaveFrom='opacity-100 scale-100'
                             leaveTo='opacity-0 scale-50'
                         >
-                            <Dialog.Panel className='transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                            <Dialog.Panel className='w-full max-w-5xl transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                                 <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900'>
                                     Create a New Doctor
                                 </Dialog.Title>
@@ -227,7 +250,10 @@ const CreateDoctorForm = ({ open, setOpen }) => {
                                                     className='peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-indigo-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50'
                                                     placeholder=' '
                                                     value={id}
-                                                    onChange={(e) => setID(e.target.value)}
+                                                    onChange={(e) => {
+                                                        if (e.target.value.length <= 6 && !isNaN(e.target.value))
+                                                            setID(e.target.value);
+                                                    }}
                                                 />
                                                 <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                                                     ID Card Number
@@ -305,7 +331,11 @@ const CreateDoctorForm = ({ open, setOpen }) => {
                                                     className='peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-indigo-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50'
                                                     placeholder=' '
                                                     value={phone}
-                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    onChange={(e) => {
+                                                        if (e.target.value.length >= 4 && e.target.value.length <= 13) {
+                                                            setPhone(e.target.value);
+                                                        }
+                                                    }}
                                                 />
                                                 <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                                                     Phone
@@ -578,6 +608,15 @@ const CreateDoctorForm = ({ open, setOpen }) => {
                                             </div>
                                         </div>
                                         <div className='flex justify-end items-end'>
+                                            <button
+                                                type='button'
+                                                onClick={()=>{
+                                                    setOpen(false)
+                                                    reset()}}
+                                                className='bg-red-700 text-white py-3 px-16 rounded-lg lg:ml-8 hover:bg-red-900 duration-500'
+                                            >
+                                                Cancel
+                                            </button>
                                             <button
                                                 type='button'
                                                 onClick={signup}

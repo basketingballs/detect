@@ -150,7 +150,7 @@ const CreateUnitForm = ({ open, setOpen }) => {
                             leaveFrom='opacity-100 scale-100'
                             leaveTo='opacity-0 scale-50'
                         >
-                            <Dialog.Panel className='transform overflow-y-scroll rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                            <Dialog.Panel className='w-full max-w-5xl transform overflow-y-scroll rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                                 <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900'>
                                     Add a New Unit
                                 </Dialog.Title>
@@ -220,8 +220,8 @@ const CreateUnitForm = ({ open, setOpen }) => {
                                                                                         ? 'bg-violet-500 text-black'
                                                                                         : 'text-gray-900'
                                                                                 } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                                                                onClick={()=> {
-                                                                                  setWilayaText(wilaya.wilaya_name)
+                                                                                onClick={() => {
+                                                                                    setWilayaText(wilaya.wilaya_name);
                                                                                 }}
                                                                             >
                                                                                 {wilaya.wilaya_name}
@@ -318,13 +318,24 @@ const CreateUnitForm = ({ open, setOpen }) => {
                                                 )}
                                             </div>
                                         </div>
-                                        <button
-                                            type='button'
-                                            onClick={signup}
-                                            className='bg-indigo-700 text-white py-3 px-5 rounded lg:ml-8 hover:bg-blue-900 duration-500'
-                                        >
-                                            Create
-                                        </button>
+                                        <div className='flex justify-end items-end'>
+                                            <button
+                                                type='button'
+                                                onClick={() => {
+                                                    setOpen(false);
+                                                }}
+                                                className='bg-red-700 text-white py-3 px-16 rounded-lg lg:ml-8 hover:bg-red-900 duration-500'
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type='button'
+                                                onClick={signup}
+                                                className='bg-indigo-700 text-white py-3 px-16 rounded-lg lg:ml-8 hover:bg-blue-900 duration-500'
+                                            >
+                                                Create
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             </Dialog.Panel>

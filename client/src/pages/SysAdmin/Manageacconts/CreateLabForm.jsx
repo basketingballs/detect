@@ -14,7 +14,7 @@ const CreateLabForm = ({ open, setOpen }) => {
     const [neighbourhood, setNeighbourhood] = useState('');
     const [postal_code, setPostal_code] = useState(0);
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+    const [phone, setPhone] = useState('+213');
 
     const [errors, setErrors] = useState({
         name: '',
@@ -176,7 +176,7 @@ const CreateLabForm = ({ open, setOpen }) => {
                             leaveFrom='opacity-100 scale-100'
                             leaveTo='opacity-0 scale-50'
                         >
-                            <Dialog.Panel className='transform overflow-y-scroll rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
+                            <Dialog.Panel className='w-full max-w-5xl transform overflow-y-scroll rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
                                 <Dialog.Title as='h3' className='text-md font-sans leading-6 text-slate-500'>
                                     Add a New Lab
                                 </Dialog.Title>
@@ -367,7 +367,11 @@ const CreateLabForm = ({ open, setOpen }) => {
                                                     className='peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-indigo-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50'
                                                     placeholder=' '
                                                     value={phone}
-                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    onChange={(e) => {
+                                                        if (e.target.value.length >= 4 && e.target.value.length <= 13) {
+                                                            setPhone(e.target.value);
+                                                        }
+                                                    }}
                                                 />
                                                 <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                                                     Phone
@@ -382,6 +386,14 @@ const CreateLabForm = ({ open, setOpen }) => {
                                             </div>
                                         </div>
                                         <div className='flex justify-end items-end'>
+                                            <button
+                                                type='button'
+                                                onClick={()=>{
+                                                    setOpen(false)}}
+                                                className='bg-red-700 text-white py-3 px-16 rounded-lg lg:ml-8 hover:bg-red-900 duration-500'
+                                            >
+                                                Cancel
+                                            </button>
                                             <button
                                                 type='button'
                                                 onClick={signup}

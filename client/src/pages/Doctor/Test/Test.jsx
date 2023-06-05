@@ -1,6 +1,5 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Menu, Transition } from '@headlessui/react';
 import toast from 'react-hot-toast';
 
 import PersonService from '../../../service/PersonServices';
@@ -20,6 +19,8 @@ export default function Test() {
     const [phone, setPhone] = useState('+213');
 
     const [wilaya, setWilaya] = useState('');
+    const [allWilaya, setAllWilaya] = useState([]);
+    const [wilayaText, setWilayaText] = useState('wilaya');
     const [dayra, setDayra] = useState('');
     const [baladya, setBaladya] = useState('');
     const [neighbourhood, setNeighbourhood] = useState('');
@@ -54,10 +55,10 @@ export default function Test() {
     });
 
     const formValidation = () => {
-    	setForm1(true);
-    	setForm2(true);
-    	setForm3(true);
-    	setForm4(true);
+        setForm1(true);
+        setForm2(true);
+        setForm3(true);
+        setForm4(true);
         let localErrors = {
             id: '',
             name: '',
@@ -121,7 +122,7 @@ export default function Test() {
             setForm2(false);
         }
 
-        if (!wilaya.trim()) {
+        if (wilayaText == 'wilaya') {
             localErrors.wilaya = 'wilaya is required.';
             setForm3(false);
         }
@@ -142,56 +143,54 @@ export default function Test() {
             setForm3(false);
         }
 
-        if(isSmoker == null){
-        	localErrors.isSmoker = 'required.';
+        if (isSmoker == null) {
+            localErrors.isSmoker = 'required.';
             setForm4(false);
         }
 
-        if(diet == null){
-        	localErrors.diet = 'required.';
+        if (diet == null) {
+            localErrors.diet = 'required.';
             setForm4(false);
         }
 
         setErrors(localErrors);
-        const Globalstatus = form1Status && form2Status && form3Status && form4Status 
-        return Globalstatus
+        const Globalstatus = form1Status && form2Status && form3Status && form4Status;
+        return Globalstatus;
     };
 
-
     const create = async () => {
-        if(formValidation()){
+        if (formValidation()) {
             const data = {
-            id: id,
-            name: name,
-            lastname: lastname,
-            gender: gender,
-            date: date,
+                id: id,
+                name: name,
+                lastname: lastname,
+                gender: gender,
+                date: date,
 
-            email: email,
-            phone: phone,
+                email: email,
+                phone: phone,
 
-            wilaya: wilaya,
-            dayra: dayra,
-            baladya: baladya,
-            neighbourhood: neighbourhood,
-            postal_code: neighbourhood,
+                wilaya: wilaya,
+                dayra: dayra,
+                baladya: baladya,
+                neighbourhood: neighbourhood,
+                postal_code: neighbourhood,
 
-            is_smoker: isSmoker,
-            diet: diet,
+                is_smoker: isSmoker,
+                diet: diet,
 
-            data : info,
+                data: info,
+            };
+            try {
+                const response = await PersonService.createSubject(data);
+                toast.success(response.data.message);
+            } catch (err) {
+                toast.error(err.response.data.message);
             }
-            try{
-               const response = await PersonService.createSubject(data)
-               toast.success(response.data.message)
-            }catch(err){
-                toast.error(err.response.data.message)
-            }
-    }
-    else{
-        toast.error('form invalid')
-    }
-}
+        } else {
+            toast.error('form invalid');
+        }
+    };
 
     const initState = async () => {
         try {
@@ -208,9 +207,57 @@ export default function Test() {
             console.log(err.message);
         }
     };
+    const getWilayas = async () => {
+        try {
+            const options = {
+                method: 'GET',
+                headers: {
+                    authorization: `${JSON.parse(localStorage.getItem('token'))}`,
+                },
+            };
+            const response = await fetch('http://localhost:5000/unit/wilaya', options);
+            const body = await response.json();
+            if (response.ok) {
+                setAllWilaya(body);
+            } else {
+                toast.error(body);
+            }
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
+
+    const getPerson = async (id) => {
+        try {
+            const options = {
+                method: 'GET',
+                headers: {
+                    authorization: `${JSON.parse(localStorage.getItem('token'))}`,
+                },
+            };
+            const response = await fetch(`http://localhost:5000/subject/person/${id}`, options);
+            const body = await response.json();
+
+            if (response.ok) {
+                if (body == 'new') {
+                    toast('seems that this is a new person');
+                } else {
+                    setName(body[0].first_name)
+                    setLastname(body[0].last_name)
+                    setDate(body[0].birthdate)
+                    setGender(body[0].is_male)
+                }
+            } else {
+                toast.error(body);
+            }
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
 
     useEffect(() => {
         initState();
+        getWilayas();
     }, []);
     return (
         <div className='w-full flex-grow bg-white rounded-md shadow p-12'>
@@ -218,22 +265,22 @@ export default function Test() {
                 <div
                     className={`flex-1 m-1 h-2 bg-green-500 flex items-center justify-center rounded-full ${
                         status == 0 ? 'bg-yellow-500 ' : ''
-                    }${form1Status ? '' : 'bg-red-600' }`}
+                    }${form1Status ? '' : 'bg-red-600'}`}
                 ></div>
                 <div
                     className={`flex-1 m-1 h-2 bg-green-500 flex items-center justify-center rounded-full ${
                         status == 1 ? 'bg-yellow-500 ' : ''
-                    }${form2Status ? '' : 'bg-red-600' }`}
+                    }${form2Status ? '' : 'bg-red-600'}`}
                 ></div>
                 <div
                     className={`flex-1 m-1 h-2 bg-green-500 flex items-center justify-center rounded-full ${
                         status == 2 ? 'bg-yellow-500 ' : ''
-                    }${form3Status ? '' : 'bg-red-600' }`}
+                    }${form3Status ? '' : 'bg-red-600'}`}
                 ></div>
                 <div
                     className={`flex-1 m-1 h-2 bg-green-500 flex items-center justify-center rounded-full ${
                         status == 3 ? 'bg-yellow-500 ' : ''
-                    }${form4Status ? '' : 'bg-red-600' }`}
+                    }${form4Status ? '' : 'bg-red-600'}`}
                 ></div>
             </div>
             {status == 0 && (
@@ -249,7 +296,10 @@ export default function Test() {
                                     className='peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-indigo-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50'
                                     placeholder=' '
                                     value={id}
-                                    onChange={(e) => setID(e.target.value)}
+                                    onChange={(e) => {
+                                        if (e.target.value.length <= 6 && !isNaN(e.target.value)) setID(e.target.value);
+                                        if (e.target.value.length == 6) getPerson(e.target.value);
+                                    }}
                                 />
                                 <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
                                     ID Card Number
@@ -408,7 +458,9 @@ export default function Test() {
                                     placeholder=' '
                                     value={phone}
                                     onChange={(e) => {
-                                        setPhone(e.target.value);
+                                        if (e.target.value.length >= 4 && e.target.value.length <= 13) {
+                                            setPhone(e.target.value);
+                                        }
                                     }}
                                 />
                                 <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
@@ -462,17 +514,61 @@ export default function Test() {
                     </div>
                     <form>
                         <div className='grid grid-cols-2 mb-6 mx-4 gap-12 py-8 '>
-                            <div className='relative h-11 w-full min-w-[200px]'>
-                                <input
-                                    type='text'
-                                    className='peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-indigo-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50'
-                                    placeholder=' '
-                                    value={wilaya}
-                                    onChange={(e) => setWilaya(e.target.value)}
-                                />
-                                <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-indigo-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-indigo-900 peer-focus:after:scale-x-100 peer-focus:after:border-indigo-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                                    Wilaya
-                                </label>
+                            <div className='relative h-11 w-full min-w-[200px] w-full'>
+                                <Menu as='div' className='relative inline-block text-left w-full'>
+                                    <div>
+                                        <Menu.Button className='ring-indigo ring-1 flex justify-between gap-8 text-black py-3 px-2 rounded w-full'>
+                                            <span className='capitalized'>{wilayaText}</span>
+                                            <svg
+                                                xmlns='http://www.w3.org/2000/svg'
+                                                fill='none'
+                                                viewBox='0 0 24 24'
+                                                strokeWidth={1.25}
+                                                stroke='currentColor'
+                                                className='w-6 h-6'
+                                            >
+                                                <path
+                                                    strokeLinecap='round'
+                                                    strokeLinejoin='round'
+                                                    d='M19.5 8.25l-7.5 7.5-7.5-7.5'
+                                                />
+                                            </svg>
+                                        </Menu.Button>
+                                    </div>
+                                    <Transition
+                                        as={Fragment}
+                                        enter='transition ease-out duration-100'
+                                        enterFrom='transform opacity-0 scale-95'
+                                        enterTo='transform opacity-100 scale-100'
+                                        leave='transition ease-in duration-75'
+                                        leaveFrom='transform opacity-100 scale-100'
+                                        leaveTo='transform opacity-0 scale-95'
+                                    >
+                                        <Menu.Items className='absolute left-0 mt-2 w-56 h-36 z-10 overflow-y-scroll origin-top-right divide-y divide-gray-900 rounded-md bg-white shadow-lg ring-1 ring-black focus:outline-none'>
+                                            <div className='px-1 py-1'>
+                                                {allWilaya.map((wilaya) => (
+                                                    <Menu.Item>
+                                                        {({ active }) => (
+                                                            <button
+                                                                type='button'
+                                                                className={`${
+                                                                    active
+                                                                        ? 'bg-violet-500 text-black'
+                                                                        : 'text-gray-900'
+                                                                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                                                onClick={() => {
+                                                                    setWilayaText(wilaya.wilaya_name);
+                                                                }}
+                                                            >
+                                                                {wilaya.wilaya_name}
+                                                            </button>
+                                                        )}
+                                                    </Menu.Item>
+                                                ))}
+                                            </div>
+                                        </Menu.Items>
+                                    </Transition>
+                                </Menu>
                                 {errors.wilaya != ' ' ? (
                                     <div style={{ textAlign: 'left', color: 'orangered' }}>{errors.wilaya}</div>
                                 ) : (
@@ -731,7 +827,7 @@ export default function Test() {
                                 Previous
                             </button>
                             <button
-                            type='button'
+                                type='button'
                                 onClick={() => create()}
                                 className='bg-green-600 text-white py-3 px-5 rounded lg:ml-8 hover:bg-green-900 duration-500 '
                             >
@@ -741,11 +837,13 @@ export default function Test() {
                     </form>
                 </>
             )}
-{(status == 4 || status == 5) && (
-                    <div className='w-full text-center text-3xl font-sans text-slate-700 pb-4 capitalize'>
-                        You're not affacted to a campaign for the moment<br/><br/>sit back and relax
-                    </div>
-                   
+            {(status == 4 || status == 5) && (
+                <div className='w-full text-center text-3xl font-sans text-slate-700 pb-4 capitalize'>
+                    You're not affacted to a campaign for the moment
+                    <br />
+                    <br />
+                    sit back and relax
+                </div>
             )}
         </div>
     );

@@ -36,29 +36,15 @@ export default function Campaign() {
 
             const response = await fetch(`http://localhost:5000/sysadmin/campaign`, options);
             const body = await response.json();
-            body.created_date = body.created_date.split('T')[0];
-            body.start_date = body.start_date.split('T')[0];
-            setCampaign(body);
-            const buffer = {
-                body: body,
-                created: new Date().toISOString(),
-            };
-            sessionStorage.setItem('campaign', JSON.stringify(buffer));
-        } catch (err) {
-            console.error(err.message);
-        }
-    };
-
-    const initCampaign = async () => {
-        try {
-            const buffer = await JSON.parse(sessionStorage.getItem('campaign'));
-            if (!buffer || Math.floor((new Date() - new Date(buffer.created)) / (1000 * 60)) > 0) {
-                getCampaign();
+            if (response.ok) {
+                body.created_date = body.created_date.split('T')[0];
+                body.start_date = body.start_date.split('T')[0];
+                setCampaign(body);
             } else {
-                setCampaign(buffer.body);
+                toast.error(body);
             }
         } catch (err) {
-            console.error(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -73,8 +59,12 @@ export default function Campaign() {
 
             const response = await fetch(`http://localhost:5000/sysadmin/campaign/unit`, options);
             const body = await response.json();
-            SetUnits(body.active);
-            SetInactiveUnits(body.inactive);
+            if (response.ok) {
+                SetUnits(body.active);
+                SetInactiveUnits(body.inactive);
+            } else {
+                toast.error(body);
+            }
         } catch (err) {
             console.error(err.message);
         }
@@ -90,10 +80,12 @@ export default function Campaign() {
             };
 
             const response = await fetch(`http://localhost:5000/sysadmin/unit/lab`, options);
-            if (response.status == 200) {
-                const body = await response.json();
+            const body = await response.json();
+            if (response.ok) {
                 setLabHistory(body.inactive);
                 setActiveLab(body.active);
+            } else {
+                toast.error(body);
             }
         } catch (err) {
             console.error(err.message);
@@ -110,10 +102,12 @@ export default function Campaign() {
             };
 
             const response = await fetch(`http://localhost:5000/sysadmin/unit/doc`, options);
-            if (response.status == 200) {
-                const body = await response.json();
+            const body = await response.json();
+            if (response.ok) {
                 setDocHistory(body.inactive);
                 setActiveDoc(body.active);
+            } else {
+                toast.error(body);
             }
         } catch (err) {
             console.error(err.message);
@@ -121,8 +115,8 @@ export default function Campaign() {
     };
 
     const getTests = async () => {
-      try{
-        const options = {
+        try {
+            const options = {
                 method: 'GET',
                 headers: {
                     authorization: `${JSON.parse(localStorage.getItem('token'))}`,
@@ -132,17 +126,14 @@ export default function Campaign() {
             const response = await fetch(`http://localhost:5000/subject/tests`, options);
             const body = await response.json();
             if (response.ok) {
-                console.log(body);
                 setTests(body);
+            } else {
+                toast.error(body);
             }
-            else{
-              toast.error(body)
-            }
-      }catch(err){
-              toast.error(err.message)
-
-      }
-    }
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
 
     const unlinkUnitLab = async (camp_unit_id, lab_id) => {
         try {
@@ -172,7 +163,7 @@ export default function Campaign() {
         getUnits();
         getLabs();
         getDoctors();
-        getTests()
+        getTests();
     }, [openUnits, openDelLab, openLab, openDoc, openDelDoc]);
 
     return (
@@ -839,7 +830,7 @@ export default function Campaign() {
                         <th scope='col' className='px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase '>
                             laboratory
                         </th>
-                         <th scope='col' className='px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase '>
+                        <th scope='col' className='px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase '>
                             test result
                         </th>
                     </tr>
@@ -851,10 +842,10 @@ export default function Campaign() {
                                 {test.test_id}
                             </td>
                             <td className='px-3 py-4 text-sm text-center font-medium text-gray-800 whitespace-nowrap'>
-                                {test.first_name} {test.last_name} 
+                                {test.first_name} {test.last_name}
                             </td>
                             <td className='px-3 py-4 text-sm text-center font-medium text-gray-800 whitespace-nowrap'>
-                                {test.test_date.split('T')[0]} 
+                                {test.test_date.split('T')[0]}
                             </td>
                             <td className='px-3 py-4 text-sm text-center font-medium text-gray-800 whitespace-nowrap'>
                                 Dr. {test.doctor_name} {test.doctor_lastname}

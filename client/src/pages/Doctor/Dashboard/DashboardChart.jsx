@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from 'react';
 import { LineChart, XAxis, YAxis, CartesianGrid, Line } from 'recharts';
 
 const Chart = () => {
