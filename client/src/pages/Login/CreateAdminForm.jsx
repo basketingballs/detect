@@ -5,14 +5,14 @@ import service from "../../service/PersonServices";
 const MIN_PASSWORD_LENGTH = 8;
 
 const CreateAdminForm = ({ control }) => {
-  const [id, setID] = useState("101010");
-  const [name, setName] = useState("khalil");
-  const [lastname, setLastname] = useState("cheddadi");
-  const [gender, setGender] = useState(null);
+  const [id, setID] = useState("");
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [gender, setGender] = useState();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState(""); //
-  const [phone, setPhone] = useState("+213669679779");
-  const [date, setDate] = useState("2002/09/26");
+  const [phone, setPhone] = useState("");
+  const [date, setDate] = useState("");
   const [code, setCode] = useState("");
 
   // checks if auth code is sent or not

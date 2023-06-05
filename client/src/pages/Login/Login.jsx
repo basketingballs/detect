@@ -5,23 +5,23 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import LoginForm from './LoginForm';
 import ForgotPassword from './ForgotPassword';
-import CreateAdminForm from './CreateAdminForm'
-
+import CreateAdminForm from './CreateAdminForm';
 
 export default function Login() {
-
     const [isLogin, setIsLogin] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
-
 
     const checkAccounts = async () => {
         try {
             const response = await fetch('http://localhost:5000/account', { method: 'GET' });
-            const jsonData = await response.json();
-            if (jsonData == true) {
-                toast.success("you're up!");
-                setIsOpen(true);
+            if (response.ok) {
+                const jsonData = await response.json();
+                if (jsonData == true) {
+                    toast.success("you're up!");
+                    setIsOpen(true);
+                }
             }
+            console.log(response)
         } catch (err) {
             toast.error(err.message);
         }
@@ -44,18 +44,16 @@ export default function Login() {
 
     function openModal() {
         setIsOpen(true);
-        
     }
 
     const deleteEmailRef = async () => {
         try {
             const response = await fetch('http://localhost:5000/email', { method: 'GET' });
             const jsonData = await response.json();
-            }
-        catch (err) {
+        } catch (err) {
             toast.error(err.message);
         }
-    }
+    };
 
     return (
         <>

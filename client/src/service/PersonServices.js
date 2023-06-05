@@ -87,4 +87,10 @@ PersonService.createSubject = function (data) {
   });
 };
 
+PersonService.addSpeciality = function (data) {
+  return axios.post("http://localhost:5000/doctor/speciality/add", data, {
+    headers: { authorization: JSON.parse(localStorage.getItem("token")) },
+  });
+};
+
 export default PersonService;

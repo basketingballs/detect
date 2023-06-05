@@ -47,8 +47,9 @@ router.get('/all', async (req, res) => {
         jwt.verify(token, process.env.KEY, async (err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: 'Bad Token' });
-            } else {
-                const lab = await pool.query(
+            }
+        });
+        const lab = await pool.query(
                     `SELECT laboratory.lab_id,laboratory.name,static_location.wilaya,static_location.dayra,
                         static_location.baladya,static_location.neighbourhood,static_location.postal_code,account.email,
                         p.last_name as admin_name 
@@ -63,8 +64,6 @@ router.get('/all', async (req, res) => {
                         ON account.account_id = laboratory.account_id;`
                 );
                 res.send(lab.rows);
-            }
-        });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -72,7 +71,6 @@ router.get('/all', async (req, res) => {
 
 
 
-// create doctor
 router.post('/create', async (req, res) => {
     const { name,wilaya ,dayra,baladya, neighbourhood , postal_code,email,phone } = req.body;
     try {
@@ -151,6 +149,42 @@ router.post('/create', async (req, res) => {
         res.status(200).json({ message: 'created successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+router.post('/delete/:id', async (req, res) => {
+    try {
+        let response;
+        const token = req.headers['authorization'];
+
+        if (!token) {
+            return res.status(401).json('non authorizated')
+        }
+
+        const data = await jwt.verify(token, process.env.KEY, async (err, decoded) => {
+            if (err) {
+                return res.status(403).json('bad token');
+            }
+            return decoded
+        });
+
+        if(data.type != 'sysadmin' || data.level != 1){
+            return res.status(401).json('non authorizated')
+        }
+
+        const { id } = req.params;
+
+        response = await pool.query('SELECT * FROM unit_lab WHERE lab_id=$1',[id])
+
+        if(response.rowCount != 0){
+           return res.status(400).json('laboratory is alredy affected to a unit deleting them may cause problems')
+        }
+
+        response = await pool.query(`DELETE FROM laboratory WHERE lab_id=$1 RETURNING *`, [id]);
+
+        res.json('successfully deleted');
+    } catch (err) {
+        res.status(400).json(err.message);
     }
 });
 

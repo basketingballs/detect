@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");//for generating and verifying JSON Web Toke
 const pool = require("../db");//to access the database.
 const crypto = require("crypto");//for cryptographic operations (hashing)
 const mailer = require("nodemailer");//for sending emails
-require("dotenv").config();//load environment variables from a .env 
+require("dotenv").config();//load environment variables from .env 
 
 
 //hash a string
@@ -11,6 +11,8 @@ const getHash = (str) => {
   hash.update(str);//update hash with str
   return hash.digest("hex");//returns the result as a hexadecimal string
 };
+
+
 //generates a random password of a specified length
 const passwordGenerator = (len) => {
   let result = "";
@@ -21,6 +23,8 @@ const passwordGenerator = (len) => {
   }
   return result;
 };
+
+
 //sending emails
 const transporters = mailer.createTransport({
   host: "smtp.ethereal.email",// connect to a fictional SMTP server (smtp.ethereal.email)
@@ -34,86 +38,6 @@ const transporters = mailer.createTransport({
 
 //EXPORTS
 
-// SIGNUP
-exports.signup = async (req, res) => {
-  const { id, name, lastname, email, pw, gender, phone, date } = req.body;//retrieves the request data
-  const pwhash = getHash(pw);
-
-  try {
-    //CHECKS IN DB
-
-    //get persons from db that has this id
-    const persons = await pool.query("SELECT * FROM person WHERE id=$1", [id]);
-    //if it already exists person/s in DB with this id
-    if (persons.rowCount != 0) {
-      res.status(400).json({ message: "person already exists!" });
-      return;
-    }
-    const emails = await pool.query("SELECT * FROM account WHERE email=$1", [
-      email,
-    ]);
-    //if it already exists account/s in DB with this email
-    if (emails.rowCount != 0) {
-      res.status(400).json({ message: "email alredy in use!" });
-      return;
-    }
-
-    const phones = await pool.query("SELECT * FROM account WHERE phone=$1", [
-      phone,
-    ]);
-    //if it already exists account/s in DB with this phone number
-    if (phones.rowCount != 0) {
-      res.status(400).json({ message: "phone number alredy in use!" });
-      return;
-    }
-    //checks if a system admin already exists in the database by searching for a record with the created_by value is NULL
-    const nulls = await pool.query(
-      "SELECT * FROM sys_admin WHERE created_by is NULL"
-    );
-
-    if (nulls.rowCount != 0) {
-      res.status(400).json({ message: "a system admin alredy exists!" });
-      return;
-    }
-    //IF THE CHECKS PASS, INSERTS INTO DB TABLES
-    const newPerson = await pool.query(
-      "INSERT INTO person (id,first_name,last_name,birthdate,is_male) VALUES($1, $2, $3, $4,$5) RETURNING *;",
-      [id, name, lastname, date, gender]
-    );
-    const newAccount = await pool.query(
-      `INSERT INTO account (pw_hash,email,phone,account_type) VALUES($1, $2, $3, 'sysadmin') RETURNING account_id;`,
-      [pwhash, email, phone]
-    );
-    //!
-    const newSysAdmin = await pool.query(
-      `INSERT INTO sys_admin (person_id,account_id,level) VALUES($1, $2, 1) RETURNING admin_id;`,
-      [id, newAccount.rows[0].account_id]
-    );
-    //!
-    const initCampaign = await pool.query(
-      `INSERT INTO campaign (name,description,status,start_date,created_by) VALUES ('Colorectal cancer','this a protoype campaign intialized on first admin signup',1,1);`
-    );
-    //SEND A CONFIRMATION EMAIL
-    const mail = {
-      from: "no-reply@detectplusplus.com",
-      to: email,
-      subject: "confirmation code",
-      text: `your confirmation code is ${passwordGenerator(6)}`,
-    };
-
-    transporters.sendMail(mail, (err, info) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("email sent ", info.response);
-      }
-    });
-
-    res.status(200).json({ message: "created successfully" });//200:OK
-  } catch (err) {
-    res.status(500).json({ message: err.message });//500:Internal Server Error
-  }
-};
 
 // SIGNIN
 exports.signin = async (req, res) => {

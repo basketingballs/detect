@@ -157,9 +157,6 @@ export default function Test() {
         return Globalstatus
     };
 
-    const validate = () =>{
-    	formValidation()
-    }
 
     const create = async () => {
         if(formValidation()){
@@ -188,7 +185,7 @@ export default function Test() {
                const response = await PersonService.createSubject(data)
                toast.success(response.data.message)
             }catch(err){
-                console.log(err.message)
+                toast.error(err.response.data.message)
             }
     }
     else{
@@ -589,8 +586,8 @@ export default function Test() {
                                         data-ripple-dark='true'
                                     >
                                         <input
-                                            id='gender'
-                                            name='type'
+                                            id='smoker'
+                                            name='smoker'
                                             type='radio'
                                             onClick={() => setIsSmoker(false)}
                                             className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-blue-500 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
@@ -620,8 +617,8 @@ export default function Test() {
                                         data-ripple-dark='true'
                                     >
                                         <input
-                                            id='gender'
-                                            name='type'
+                                            id='smoker'
+                                            name='smoker'
                                             type='radio'
                                             onClick={() => setIsSmoker(true)}
                                             className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-blue-500 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
@@ -664,8 +661,8 @@ export default function Test() {
                                         data-ripple-dark='true'
                                     >
                                         <input
-                                            id='gender'
-                                            name='type'
+                                            id='diet'
+                                            name='diet'
                                             type='radio'
                                             onClick={() => setDiet(false)}
                                             className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-blue-500 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
@@ -695,8 +692,8 @@ export default function Test() {
                                         data-ripple-dark='true'
                                     >
                                         <input
-                                            id='gender'
-                                            name='type'
+                                            id='diet'
+                                            name='diet'
                                             type='radio'
                                             onClick={() => setDiet(true)}
                                             className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-blue-500 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
@@ -743,6 +740,12 @@ export default function Test() {
                         </div>
                     </form>
                 </>
+            )}
+{(status == 4 || status == 5) && (
+                    <div className='w-full text-center text-3xl font-sans text-slate-700 pb-4 capitalize'>
+                        You're not affacted to a campaign for the moment<br/><br/>sit back and relax
+                    </div>
+                   
             )}
         </div>
     );

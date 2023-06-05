@@ -98,15 +98,19 @@ router.post('/create', async (req, res) => {
 router.get('/all', async (req, res) => {
     try {
         token = req.headers['authorization'];
+
         if (!token) {
             return res.status(401).json({ message: 'UnAuthorized' });
         }
+
         jwt.verify(token, process.env.KEY, async (err, decoded) => {
             if (err) {
                 return res.status(403).json({ message: 'Bad Token' });
-            } else {
-                const doctor = await pool.query(
-                    `SELECT doctor.doctor_id,person.first_name,person.last_name,speciality.name as speciality,account.email,p.last_name as admin_name,person.created_date,doctor.status
+            }
+        });
+
+        const doctor = await pool.query(
+            `SELECT doctor.doctor_id,person.first_name,person.last_name,speciality.name as speciality,account.email,p.last_name as admin_name,person.created_date,doctor.status
                         FROM doctor JOIN person
                         ON person.id=doctor.person_id 
                         JOIN sys_admin 
@@ -117,10 +121,8 @@ router.get('/all', async (req, res) => {
                         ON doctor.speciality=speciality.speciality_id
                         JOIN account
                         ON doctor.account_id=account.account_id;`
-                );
-                res.json(doctor.rows);
-            }
-        });
+        );
+        res.json(doctor.rows);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -135,16 +137,39 @@ router.get('/speciality', async (req, res) => {
     }
 });
 
-router.post('/delete/:id' ,async (req, res) => {
+router.post('/speciality/add', async (req, res) => {
     try {
-        const { id } = req.params;
+        const token = req.headers['authorization'];
 
-        const deleted = await pool.query(`DELETE FROM doctor WHERE doctor_id=$1 RETURNING *`,[id]);
-        res.json({message : 'successfully deleted'});
+        if (!token) {
+            return res.status(401).json('non authorizated')
+        }
+
+        const data = await jwt.verify(token, process.env.KEY, async (err, decoded) => {
+            if (err) {
+                return res.status(403).json('bad token');
+            }
+            return decoded
+        });
+
+        if(data.type != 'sysadmin' || data.level != 1){
+            return res.status(401).json('non authorizated')
+        }
+
+        const {name} = req.body
+
+        const spec = await pool.query(`SELECT * FROM speciality WHERE name = $1`,[name]);
+
+        if (spec.rowCount != 0) {
+            return res.status(400).json('speciality already exists');
+        }
+        const newSpec = await pool.query(`INSERT INTO speciality (name) VALUES ($1)`,[name]);
+        res.json('successfully added');
     } catch (err) {
         res.status(400).json(err.message);
     }
 });
+
 
 router.get('/:id', async (req, res) => {
     try {
@@ -181,7 +206,52 @@ router.get('/info/:id', async (req, res) => {
         );
         res.json(newDoctor.rows[0]);
     } catch (err) {
-        res.json(err.message);
+        res.json({ message: err.message });
+    }
+});
+
+router.get('/history/:id', async () => {
+    try {
+    } catch (err) {
+        res.json({ message: err.message });
+    }
+});
+
+
+// delete a partucular doctor , canot delete doctors that are in a campaign or a unit already
+router.post('/delete/:id', async (req, res) => {
+    try {
+        let response;
+        const token = req.headers['authorization'];
+
+        if (!token) {
+            return res.status(401).json('non authorizated')
+        }
+
+        const data = await jwt.verify(token, process.env.KEY, async (err, decoded) => {
+            if (err) {
+                return res.status(403).json('bad token');
+            }
+            return decoded
+        });
+
+        if(data.type != 'sysadmin' || data.level != 1){
+            return res.status(401).json('non authorizated')
+        }
+
+        const { id } = req.params;
+
+        response = await pool.query('SELECT * FROM unit_doc WHERE doctor_id=$1',[id])
+
+        if(response.rowCount != 0){
+           return res.status(400).json('doctor alredy affected to a unit deleting them may cause problems')
+        }
+
+        response = await pool.query(`DELETE FROM doctor WHERE doctor_id=$1 RETURNING *`, [id]);
+
+        res.json('successfully deleted');
+    } catch (err) {
+        res.status(400).json(err.message);
     }
 });
 

@@ -14,16 +14,17 @@ router.post('/confirm', async (req, res) => {
     const { email } = req.body;
 
     try {
-        const emails = await pool.query('SELECT * FROM account WHERE email=$1', [email]);
+        let response;
+        response = await pool.query('SELECT * FROM account WHERE email=$1', [email]);
+        const emails = response.rowCount;
 
-        if (emails.rowCount != 0) {
-            res.status(400).json({ message: 'email alredy in use!' });
-            return;
+        if (emails != 0) {
+            return res.status(400).json({ message: 'email alredy in use!' });
         }
 
         const code = service.passwordGenerator(6);
 
-        const confirmEmail = await pool.query(`INSERT INTO temp_email_confirmation VALUES ($1,$2);`, [email, code]);
+        response = await pool.query(`INSERT INTO temp_email_confirmation VALUES ($1,$2);`, [email, code]);
 
         const mail = {
             from: 'no-reply@detectplusplus.com',
@@ -47,7 +48,7 @@ router.post('/confirm', async (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-    const { id, name, lastname, email, pw, gender, phone, date, code } = req.body;
+    const { id, name, lastname, gender, date, email, pw, phone, code } = req.body;
     const pwhash = service.getHash(pw);
 
     try {
@@ -112,7 +113,7 @@ router.post('/signup', async (req, res) => {
         console.log(newAccount.rows[0].account_id);
         //!
         const initCampaign = await pool.query(
-            `INSERT INTO campaign (name,description,status,created_date,created_by) VALUES ('Colorectal cancer','this a protoype campaign intialized on first admin signup',1,CURRENT_DATE,$1);`,
+            `INSERT INTO campaign (name,description,status,created_date,created_by,min_age) VALUES ('Colorectal cancer','this a protoype campaign intialized on first admin signup',1,CURRENT_DATE,$1,55);`,
             [newSysAdmin.rows[0].admin_id]
         );
 
@@ -240,14 +241,40 @@ router.get('/all', async (req, res) => {
 
 router.post('/delete/:id', async (req, res) => {
     try {
+        let response;
+        const token = req.headers['authorization'];
+
+        if (!token) {
+            return res.status(401).json('non authorizated')
+        }
+
+        const data = await jwt.verify(token, process.env.KEY, async (err, decoded) => {
+            if (err) {
+                return res.status(403).json('bad token');
+            }
+            return decoded
+        });
+
+        if(data.type != 'sysadmin' || data.level != 1){
+            return res.status(401).json('non authorizated')
+        }
+
         const { id } = req.params;
 
-        const deleted = await pool.query(`DELETE FROM sys_admin WHERE admin_id=$1 RETURNING *`, [id]);
-        res.json({ message: 'successfully deleted' });
+        response = await pool.query('SELECT * FROM sys_admin WHERE admin_id=$1',[id])
+
+        if(response.rows[0].level == 0){
+           return res.status(400).json('deleting a level 1 admin is too dangerious')
+        }
+
+        response = await pool.query(`DELETE FROM sys_admin WHERE admin_id=$1 RETURNING *`, [id]);
+
+        res.json('successfully deleted');
     } catch (err) {
         res.status(400).json(err.message);
     }
 });
+
 
 router.get('/campaign', async (req, res) => {
     try {
@@ -262,7 +289,7 @@ router.get('/campaign', async (req, res) => {
         });
         const getCampaign = await pool.query(
             `SELECT campaign.campaign_id,campaign.name,campaign.description,
-                        campaign.created_date,campaign.end_date,campaign.start_date ,
+                        campaign.created_date,campaign.end_date,campaign.start_date , campaign.min_age,
                         campaign.status,status.status_text,person.last_name as admin_name
                         FROM campaign
                         JOIN status
@@ -379,7 +406,7 @@ router.get('/unit/lab', async (req, res) => {
                 JOIN camp_unit cu ON cu.camp_unit_id = ul.camp_unit_id
                 JOIN unit u ON u.unit_id = cu.unit_id
                  WHERE ul.status = 1;`
-            )
+        );
         const getInActiveUnitLab = await pool.query(
             `SELECT ul.camp_unit_id , ul.unit_lab_id , ul.status , ul.lab_id , ul.start_date,ul.end_date , l.name as lab_name , u.name as unit_name,u.unit_id
                 FROM unit_lab ul
@@ -387,8 +414,8 @@ router.get('/unit/lab', async (req, res) => {
                 JOIN camp_unit cu ON cu.camp_unit_id = ul.camp_unit_id
                 JOIN unit u ON u.unit_id = cu.unit_id
                  WHERE ul.status = 4;`
-            )
-        res.status(200).json({active : getActiveUnitLab.rows, inactive : getInActiveUnitLab.rows})
+        );
+        res.status(200).json({ active: getActiveUnitLab.rows, inactive: getInActiveUnitLab.rows });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -428,7 +455,10 @@ router.post('/unit/lab/remove', async (req, res) => {
             }
         });
         const { camp_unit_id, lab_id } = req.body;
-        const response = pool.query('UPDATE unit_lab set status = 4 WHERE  status = 1 AND camp_unit_id =$1 AND lab_id=$2', [camp_unit_id,lab_id]);
+        const response = pool.query(
+            'UPDATE unit_lab set status = 4 WHERE  status = 1 AND camp_unit_id =$1 AND lab_id=$2',
+            [camp_unit_id, lab_id]
+        );
 
         return res.json({ message: 'relation removed successfully' });
     } catch (err) {
@@ -455,7 +485,7 @@ router.get('/unit/doc', async (req, res) => {
                 JOIN camp_unit cu ON cu.camp_unit_id = ud.camp_unit_id
                 JOIN unit u ON u.unit_id = cu.unit_id
                  WHERE ud.status = 1;`
-            )
+        );
 
         const getInActiveUnitDoc = await pool.query(
             `SELECT ud.camp_unit_id , ud.unit_doc_id , ud.status , ud.doctor_id , ud.end_date ,ud.start_date , p.first_name,p.last_name , u.name as unit_name
@@ -465,8 +495,8 @@ router.get('/unit/doc', async (req, res) => {
                 JOIN camp_unit cu ON cu.camp_unit_id = ud.camp_unit_id
                 JOIN unit u ON u.unit_id = cu.unit_id
                  WHERE ud.status = 4;`
-            )
-        res.status(200).json({active : getActiveUnitDoc.rows, inactive : getInActiveUnitDoc.rows})
+        );
+        res.status(200).json({ active: getActiveUnitDoc.rows, inactive: getInActiveUnitDoc.rows });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

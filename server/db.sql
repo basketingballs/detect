@@ -265,6 +265,19 @@ CREATE TABLE laboratory (
   created_by INT REFERENCES sys_admin(admin_id) NOT NULL
 );
 
+CREATE FUNCTION delete_account()
+  RETURNS TRIGGER AS $$
+BEGIN
+  DELETE FROM account WHERE account_id = OLD.account_id;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER delete_lab_account
+  AFTER DELETE ON laboratory
+  FOR EACH ROW
+  EXECUTE FUNCTION delete_account();
+
 CREATE TABLE subject (
   subject_id SERIAL PRIMARY KEY,
   person_id INT REFERENCES person(id) NOT NULL,
@@ -447,10 +460,56 @@ BEFORE UPDATE ON unit_doc
 FOR EACH ROW
 EXECUTE FUNCTION set_end_date();
 
-    -- subject_id ,
-    -- doctor_id ,
-    -- unit_id,
-    -- lab_id ,
-    -- camp_id ,
-    -- doctor_notes,
-    -- test_date
+CREATE TABLE wilaya (
+  wilaya_number INT PRIMARY KEY,
+  wilaya_name VARCHAR(100)
+);
+
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (1, 'Adrar');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (2, 'Chlef');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (3, 'Laghouat');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (4, 'Oum El Bouaghi');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (5, 'Batna');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (6, 'Béjaïa');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (7, 'Biskra');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (8, 'Béchar');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (9, 'Blida');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (10, 'Bouira');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (11, 'Tamanrasset');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (12, 'Tébessa');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (13, 'Tlemcen');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (14, 'Tiaret');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (15, 'Tizi Ouzou');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (16, 'Algiers');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (17, 'Djelfa');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (18, 'Jijel');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (19, 'Sétif');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (20, 'Saïda');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (21, 'Skikda');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (22, 'Sidi Bel Abbès');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (23, 'Annaba');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (24, 'Guelma');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (25, 'Constantine');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (26, 'Médéa');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (27, 'Mostaganem');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (28, 'M''Sila');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (29, 'Mascara');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (30, 'Ouargla');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (31, 'Oran');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (32, 'El Bayadh');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (33, 'Illizi');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (34, 'Bordj Bou Arréridj');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (35, 'Boumerdès');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (36, 'El Tarf');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (37, 'Tindouf');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (38, 'Tissemsilt');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (39, 'El Oued');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (40, 'Khenchela');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (41, 'Souk Ahras');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (42, 'Tipaza');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (43, 'Mila');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (44, 'Aïn Defla');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (45, 'Naâma');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (46, 'Aïn Témouchent');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (47, 'Ghardaïa');
+INSERT INTO wilaya (wilaya_number, wilaya_name) VALUES (48, 'Relizane');
